@@ -18,7 +18,6 @@ jobs:
         ./wit-deps lock
         git add -N wit/deps
         git diff --exit-code
-    - uses: WebAssembly/wit-abi-up-to-date@v23
+    - uses: ricochet/wit-abi-up-to-date@update-deps
       with:
-        wit-bindgen: '0.37.0'
         all-features: 'true'
