@@ -73,8 +73,7 @@ jobs:
             This is an automated update to rev the RC timestamp.
             
             ## Changes
-            - Updated package version in WIT files
-            - Updated @since annotations 
+            - Updated package and since version in WIT files
             - Updated WIT dependencies if applicable
           draft: false
           delete-branch: true
