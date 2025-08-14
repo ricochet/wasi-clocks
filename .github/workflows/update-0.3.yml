@@ -55,28 +55,26 @@ jobs:
       - name: Update wit deps
         run: |
           cd wit-0.3.0-draft
-          ../wit-deps update || true  # Continue even if no deps to update
+          wit-deps update || true  # Continue even if no deps to update
 
-      # Create PR with changes
-      - name: Create feature branch
-        env:
-          FEATURE_BRANCH: update-0.3.0-${{ steps.version.outputs.value }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b $FEATURE_BRANCH
-          git add .
-          
-          # Only commit if there are changes
-          if ! git diff --staged --quiet; then
-            git commit -m "Update 0.3.0 WIT definitions to ${{ steps.version.outputs.value }}"
-            git push -u origin $FEATURE_BRANCH
+      # Create PR with changes using create-pull-request action
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update 0.3.0 WIT definitions to ${{ steps.version.outputs.value }}"
+          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          branch: update-wit-${{ steps.version.outputs.value }}
+          title: "Update 0.3.0 WIT definitions to ${{ steps.version.outputs.value }}"
+          body: |
+            Updates the 0.3.0 WIT definitions with version ${{ steps.version.outputs.value }}.
             
-            # Create pull request
-            gh pr create -B main -H $FEATURE_BRANCH \
-              --title "Update 0.3.0 WIT definitions to ${{ steps.version.outputs.value }}" \
-              --body "Updates the 0.3.0 WIT definitions with version ${{ steps.version.outputs.value }}. This is an automated update using the RC timestamp versioning method."
-          else
-            echo "No changes to commit"
-          fi
+            This is an automated update to rev the RC timestamp.
+            
+            ## Changes
+            - Updated package version in WIT files
+            - Updated @since annotations 
+            - Updated WIT dependencies if applicable
+          draft: false
+          delete-branch: true
